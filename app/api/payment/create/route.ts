@@ -1,0 +1,4 @@
+import {NextResponse} from 'next/server';
+import Razorpay from 'razorpay';
+import {adminDb,userFromToken} from '../../../../lib/server';
+export async function POST(req:Request){try{const user=await userFromToken(req);if(!user)return NextResponse.json({error:'Unauthorized'},{status:401});const rz=new Razorpay({key_id:process.env.RAZORPAY_KEY_ID!,key_secret:process.env.RAZORPAY_KEY_SECRET!});const order=await rz.orders.create({amount:49900,currency:'INR',receipt:`sc_${Date.now()}_${user.id.slice(0,8)}`});const {error}=await adminDb().from('payments').insert({id:order.id,user_id:user.id,amount:49900});if(error)throw error;return NextResponse.json({orderId:order.id,amount:49900,key:process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID});}catch{return NextResponse.json({error:'Could not start payment'},{status:500});}}
