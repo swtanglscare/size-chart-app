@@ -32,7 +32,7 @@ export async function GET(request: Request) {
         getAll() {
           return cookieStore.getAll();
         },
-      setAll(items: {
+     setAll(items: {
   name: string;
   value: string;
   options?: {
